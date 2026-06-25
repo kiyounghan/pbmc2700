@@ -1,0 +1,8 @@
+# Ignoring raw matrix data assets
+data/
+
+# Ignoring local system workspace metadata
+.DS_Store
+.Rhistory
+.RData
+.Ruserdata
