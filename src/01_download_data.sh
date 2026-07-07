@@ -1,87 +1,63 @@
 #!/bin/bash
 
-# ==============================================================================
-# SCRIPT: 01_download_data.sh
-# DESCRIPTION: 2 datasets. Downloads and unpacks both the 
-#              2,700-cell target query dataset and the 68,000-cell reference atlas.
-# ==============================================================================
-
-#  Production error handling
+# Exit immediately if a command exits with a non-zero status
 set -e
-set -o pipefail
 
-# ==============================================================================
-# CONFIGURATION: DIRECTORIIES & URL
-# ==============================================================================
-# Dataset 1: Target Query (2,700 Cells)
-QUERY_DIR="data/pbmc_2700"
-QUERY_URL="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz"
-QUERY_TAR="${QUERY_DIR}/pbmc3k_filtered_gene_bc_matrices.tar.gz"
+echo "=================================================="
+echo "   STARTING SINGLE-CELL DATA ACQUISITION PIPELINE "
+echo "=================================================="
 
-# Dataset 2: Reference Atlas (68,0000 Cells)
-REF_DIR="data/reference_atlas"
-REF_URL="https://cf.10xgenomics.com/samples/cell-exp/1.1.0/fresh_68k_pbmc_donor_a/fresh_68k_pbmc_donor_a_filtered_gene_bc_matrices.tar.gz"
-REF_TAR="${REF_DIR}/fresh_68k_pbmc_donor_a_filtered_gene_bc_matrices.tar.gz"
+# --- SECTION 1: QUERY DATASET (2,700 PBMCs from 10x Genomics) ---
+echo -e "\n--> Step 1: Verifying Local Query Dataset..."
 
+DATA_URL="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz"
+TARGET_TAR="matrix_2700.tar.gz"
+EXTRACT_DIR="filtered_gene_bc_matrices"
 
-# ==============================================================================
-# PHASE 1: TARGET QUERY (2,700 CELLS)
-# ==============================================================================
-echo "=== Phase 1: Starting Target Query Pipeline ==="
-
-mkdir -p "$QUERY_DIR"
-
-if [ ! -f "$QUERY_TAR" ]; then
-    echo "[INFO] Downloading 2,700 PBMC query data from 10x Genomics..."
-    curl -L -o "$QUERY_TAR" "$QUERY_URL"
-    echo "[SUCCESS] Query tarball downloaded successfully."
+# Check if the compressed tarball already exists
+if [ -f "$TARGET_TAR" ]; then
+    echo "SKIP Tarball '$TARGET_TAR' already exists locally."
 else
-    echo "[INFO] Target query tarball already exists. Skipping download."
+    echo "Tarball not found. Downloading 2,700 PBMC dataset..."
+    curl -o "$TARGET_TAR" "$DATA_URL"
+    echo "Download complete."
 fi
 
-echo "[INFO] Decompressing query matrix data..."
-tar -zxvf "$QUERY_TAR" -C "$QUERY_DIR"
-
-echo "[INFO] Flattening folder structural layout..."
-# 10x archives extract into a nested 'filtered_gene_bc_matrices/hg19/' path
-if [ -d "${QUERY_DIR}/filtered_gene_bc_matrices/hg19" ]; then
-    mv "${QUERY_DIR}/filtered_gene_bc_matrices/hg19/"* "$QUERY_DIR"
-    rm -rf "${QUERY_DIR}/filtered_gene_bc_matrices"
-fi
-
-
-# ==============================================================================
-#  PHASE 2: REFERENCE ATLAS (68,000 CELLS)
-# ==============================================================================
-echo "=== Phase 2: Stating Reference Atlas  Pipeline ==="
-
-mkdir -p "$REF_DIR"
-
-if [ ! -f "$REF_TAR" ]; then
-    echo "[INFO] Downloading Zheng 68k PBMC reference data from 10x Genomics..."
-    curl -L -o "$REF_TAR" "$REF_URL"
-    echo "[SUCCESS] Reference atlas tarball downloaded successfully."
+# Check if the extracted data directory already exists
+if [ -d "$EXTRACT_DIR" ]; then
+    echo "SKIP Extracted directory '$EXTRACT_DIR/' already exists."
 else
-    echo "[INFO] Reference atlas tarball already exists. Skipping download."
-fi
-
-echo "[INFO] Decompressing reference matrix data..."
-tar -zxvf "$REF_TAR" -C "$REF_DIR"
-
-echo "[INFO] Flattening folder structural layout..."
-# The 68k archive extracts into a nested 'filtered_matrices_mex/hg19/' folder path
-if [ -d "${REF_DIR}/filtered_matrices_mex/hg19" ]; then
-    mv "${REF_DIR}/filtered_matrices_mex/hg19/"* "$REF_DIR"
-    rm -rf "${REF_DIR}/filtered_matrices_mex"
+    echo "Extracted data directory not found. Unpacking archive..."
+    tar -xzf "$TARGET_TAR"
+    echo "Extraction complete."
 fi
 
 
-# ==============================================================================
-# PIPELINE STATUS CHECK
-# ==============================================================================
-echo "=== [COMPLETED] Data Staging Complete ==="
-echo "[STATUS] Target query dataset ready at: ${QUERY_DIR}/"
-echo "[STATUS] Reference atlas dataset ready at: ${REF_DIR}/" 
+# --- SECTION 2: REFERENCE DATASET (pbmcsca via SeuratData) ---
+echo -e "\n--> Step 2: Verifying SeuratData Reference Environment..."
 
+# This block spins up an isolated R instance to safely check the SeuratData cache
+R_COMMAND="
+if (!requireNamespace('SeuratData', quietly = TRUE)) {
+    message('SeuratData package missing. Installing now...')
+    install.packages('SeuratData', repos = 'https://cloud.r-project.org')
+}
 
+# Load available dataset inventory
+installed_data <- SeuratData::AvailableData()
 
+if (!'pbmcsca' %in% installed_data\$Dataset) {
+    message('Reference dataset \"pbmcsca\" not found in cache. Downloading via SeuratData...')
+    SeuratData::InstallData('pbmcsca')
+    message('Reference dataset \"pbmcsca\" successfully downloaded and cached.')
+} else {
+    message('SKIP Reference dataset \"pbmcsca\" is already cached locally.')
+}
+"
+
+# Execute the R commands directly from the bash environment
+Rscript -e "$R_COMMAND"
+
+echo -e "\n=================================================="
+echo "   PIPELINE SUCCESS: ALL DATASETS VALIDATED            "
+echo "======================================================="
