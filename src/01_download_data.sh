@@ -58,6 +58,6 @@ if (!'pbmcsca' %in% installed_data\$Dataset) {
 # Execute the R commands directly from the bash environment
 Rscript -e "$R_COMMAND"
 
-echo -e "\n=================================================="
-echo "   PIPELINE SUCCESS: ALL DATASETS VALIDATED            "
+echo "======================================================="
+echo "  DATASETS Downloaded                                  "
 echo "======================================================="
