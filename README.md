@@ -22,17 +22,30 @@ Validate the unsupervised clustering methods and results by generating expressio
 
 ![Canonical Marker Profiles](results/canonical_markers_verification.png)
 
-### 3. Supervised Reference Classification (Random Forest - RF)
+### 3. Supervised Reference Classification & Evaluation (Random Forest - RF)
 Used the benchmark training data benchmark from Systematic comparison of single-cell, Nat. Biotech 2020, which profiled a total of 31,021 human PBMCs using 10x Chromium (v2). Trained a 5-fold CV on 80/20 training/test set then fitted RF model to predict Labels of query dataset.  
 
 ![Louvain Random Forest](results/Louvain_Random_Forest.png)
 
-### 4. Discrepancy Analysis 
+
+Used Louvain and RF classification Labels to determine the proportion of congruence.
+
+![CProportion Table](results/Louvain_vs_RF_prop_table.csv)
+
+
+### 4. Predictive Gene Driver vs. Canonical Markers
+Top 20 gene drivers plot is in stark contrast to the canonical markers plot. Researchers rely on low-abundance receptors like **`CD14`** to name Monocytes, but these transcripts suffer from dropout (false zeros). However, RF prefers abundant, dominant transcripts like **`LYZ`** , **`S100A8`** , and **`S100A9`** to construct a stable classification strategy.
+
+![Predictive Gene Divers](results/RF_Top_genes.png)
+
+
+
+### 5. Discrepancy Analysis 
 Louvain is not the absolute biological truth. However, use Louvain clusters as an unbiased, unsupervised baseline of the raw data structure. By mapping the supervised Random Forest Labels, the discrepancy analysis allows us to spot exactly where mathematical clustering and supervised biological memory **disagree**. These are the most interesting or ambiguous cell population.
 
 ![Discrepancy Random Forest](results/Discrepancies_Random_Forest.png)
 
-### 5. Downstream Diagnostics & Validation Audit
+### 6. Downstream Diagnostics & Validation Audit
 The main focal point of this pipeline is the validation of the supervised Random Forest (RF) classifier against unsupervised data-driven structures and canonical biological markers. Rather than accepting the model's classifications blindly, a visual and spatial audit was conducted.
 
 ### Observed Discrepancy in Lineage Mapping
