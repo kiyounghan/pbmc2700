@@ -484,6 +484,26 @@ registerDoSEQ()
 message("Training complete. CPU back to single core.")
 print(rf_model$bestTune)
 
+final_plot = ggplot(rf_model) +
+  geom_point(size = 4, color = "blue") +
+  labs(
+    title = "mtry vs Kappa Statistic",
+    x = "mtry #",
+    y = "Kappa Statistic"
+  ) +
+  theme_minimal(base_size = 12) + 
+  theme(
+    axis.text.y = element_text(face = "bold.italic", color = "black"), # why professor always use italics?
+    panel.grid.major.y = element_blank(), 
+    plot.title = element_text(hjust = 0.5, face = "bold")
+     )
+
+message("Trained enough trees (ntree=250) for model to stabilize and shows didn't under-train or over-train.")
+final_plot
+
+ggsave("/Users/kiyounghan/Desktop/mtry_Kappa.png", plot = final_plot , width  = 12 , height = 10 , dpi = 300 )
+
+
 print("====================================================================================")
 print(" 8. Parallel Processsors & 10-fold CV...COMPLETED                                   ")
 print("====================================================================================")
@@ -573,10 +593,11 @@ contingency_table <- table(
 print(contingency_table)
 
 # Row sum to 100 %
-print(round(prop.table(contingency_table, margin = 1) * 100, 1))
+prop_table <- round(prop.table(contingency_table, margin = 1) * 100, 1)
+print(prop_table)
 
 # Save to CSV file
-write.csv(as.data.frame.matrix(contingency_table), file = "RF_vs_Louvain_contingency_table.csv")
+write.csv(as.data.frame.matrix(prop_table), file = "/Users/kiyounghan/Desktop/Louvain_vs_RF_prop_table.csv")
 
 print("==================================================================================================================")
 print(" 11. Cross Evaluation: Random Forest vs Louvain...COMPLETED                                                      ")
@@ -650,7 +671,7 @@ print("=========================================================================
 
 
 print("==============================================================================")
-print(" 13. Downstream Diagnostics...starting                                        ")
+print(" 13. Discrepancy Analysis...starting                                         ")
 print("==============================================================================")
 
 # --- Top misclassifications - Discrepancy Analysis ---
@@ -685,8 +706,40 @@ options(repr.plot.width = 12, repr.plot.height = 6)
 final_plot = p1 + p2 
 ggsave( "/Users/kiyounghan/Desktop/Discrepancies_Random_Forest.png", plot = final_plot,width  = 12,height = 10,dpi = 300)
 
+
+
+# --- Variable Importance (The Gene Driver) Plot ---
+
+importance_matrix <- as.data.frame(rf_model$finalModel$importance)
+top_genes <- order(importance_matrix$MeanDecreaseAccuracy, decreasing = TRUE)[1:20]
+
+top_genes_idx <- data.frame(Gene =  rownames(importance_matrix)[top_genes] , 
+                            Importance =  importance_matrix$MeanDecreaseAccuracy[top_genes] 
+                             )
+
+
+final_plot <- ggplot(top_genes_idx, aes(x = reorder(Gene, Importance), y = Importance)  ) +
+  geom_point(size = 4, color = "blue") + 
+  geom_segment(aes(x = Gene, xend = Gene, y = 0, yend = Importance), color = "red") + 
+  coord_flip() + 
+  labs(
+    title = "Random Forest: Top 20 Gene Drivers",
+    x = "Genomic Markers",
+    y = "Variable Importance (Mean DECREASE Accuracy)"
+  ) +
+  theme_minimal(base_size = 12) + 
+  theme(
+    axis.text.y = element_text(face = "bold.italic", color = "black"), 
+    panel.grid.major.y = element_blank(), 
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+final_plot
+
+ggsave( "/Users/kiyounghan/Desktop/RF_Top_20_genes.png", plot = final_plot,width  = 12,height = 10,dpi = 300)
+
 print("==============================================================================")
-print(" 13. Downstream Diagnostics...COMPLETED                                       ")
+print(" 13. Discrepancy Analysis...COMPLETED                                         ")
 print("==============================================================================")
 
 

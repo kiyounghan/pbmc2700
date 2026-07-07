@@ -8,3 +8,7 @@ data/
 .Ruserdata
 filtered_gene_bc_matrices/
 matrix_2700.tar.gz
+dumped/
+*.rds
+*.tar.gz
+filtered_feature_bc_matrix.tar.gz
