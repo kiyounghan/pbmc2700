@@ -32,6 +32,29 @@ Louvain is not the absolute biological truth. However, use Louvain clusters as a
 
 ![Discrepancy Random Forest](results/Discrepancies_Random_Forest.png)
 
+### 5. Downstream Diagnostics & Validation Audit
+The main focal point of this pipeline is the validation of the supervised Random Forest (RF) classifier against unsupervised data-driven structures and canonical biological markers. Rather than accepting the model's classifications blindly, a visual and spatial audit was conducted.
+
+### Observed Discrepancy in Lineage Mapping
+When evaluating the UMAP projections, an explicit spatial mismatch was identified between the RF predictions and the ground-truth biological expression:
+* **Canonical Marker Expression:** The definitive B-cell marker **`MS4A1`** cleanly lights up exclusively in the **bottom-right** cluster of the UMAP embedding.
+* **Random Forest Classification:** The categorical "B-cell" labels assigned by the RF model map erroneously to the **bottom-left** cluster.
+
+### Technical & Biological Hypotheses
+This discrepancy is openly presented as a primary diagnostic checkpoint. Two main hypotheses can be considered, at this point:
+
+1. **Coordinates Misalignment (Technical):** The UMAP embeddings generated on different objects or during different integration stages will not automatically align. 
+2. **Feature Mapping & Batch Bias (Computational):** A misalignment in the highly variable gene features between the training reference and this 2,700 PBMC query dataset.
+
+### Possible Next Steps: 
+* Look at exact metadata and coordinate matrices so that both plots are strictly bound to the exact same local object.
+* Try other models without being restricted to the model's confusion matrix and Kappa statistics and focus more on visual coordinate placement.
+
+
+
+
+
+
 ## Local Replication Guidelines
 ```bash
 git clone [https://github.com/kiyounghan/pbmc2700.git](https://github.com/kiyounghan/pbmc2700.git)
