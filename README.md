@@ -30,13 +30,13 @@ Used the benchmark training data benchmark from Systematic comparison of single-
 
 Used Louvain and RF classification Labels to determine the proportion of congruence.
 
-![CProportion Table](results/Louvain_vs_RF_prop_table.csv)
+![Louvain_vs_RF_prop_table](results/Louvain_vs_RF_prop_table.csv)
 
 
 ### 4. Predictive Gene Driver vs. Canonical Markers
 Top 20 gene drivers plot is in stark contrast to the canonical markers plot. Researchers rely on low-abundance receptors like **`CD14`** to name Monocytes, but these transcripts suffer from dropout (false zeros). However, RF prefers abundant, dominant transcripts like **`LYZ`** , **`S100A8`** , and **`S100A9`** to construct a stable classification strategy.
 
-![Predictive Gene Divers](results/RF_Top_genes.png)
+![RF_Top_genes](results/RF_Top_genes.png)
 
 
 
