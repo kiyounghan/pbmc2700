@@ -6,3 +6,5 @@ data/
 .Rhistory
 .RData
 .Ruserdata
+filtered_gene_bc_matrices/
+matrix_2700.tar.gz
