@@ -201,7 +201,7 @@ Below is UP regulated genes with **NO FILTER** applied. Notice how the top gene 
 ![Top Fold_Change DOWN regulated Genes](pbmc2700/results/Top_Fold_Change_DOWN_regulated_Genes.png)
 
 ### Discrepancy Visualization
-* **Spatial Evidence**: The `FeaturePlot()` provided below provides spatial proof on the UMAP that these discrepancy markers are not randomly scattered, but are tightly co-localized to a single, distinct sub-cluster. High expression levels across all four markers concentrate heavily in the lower-middle region of the primary top-right UMAP cluster (chicken drumstick) ($(\text{umap\_1} \in [3, 8], \text{umap\_2} \in [-2, 5])$. This spatial alignment confirms that the shared expression of cytotoxic and exhaustion genes — and the resulting classification disagreement between algorithms — is isolated to a discrete biological subpopulation.
+* **Spatial Evidence**: The `FeaturePlot()` provided below provides spatial proof on the UMAP that these discrepancy markers are not randomly scattered, but are tightly co-localized to a single, distinct sub-cluster. High expression levels across all four markers concentrate heavily in the lower-middle region of the primary top-right UMAP cluster (chicken drumstick) $(\text{umap}_1 \in [3, 8], \text{umap}_2 \in [-2, 5])$ This spatial alignment confirms that the shared expression of cytotoxic and exhaustion genes — and the resulting classification disagreement between algorithms — is isolated to a discrete biological subpopulation.
 
 ![top_4_discrepancy_genes](pbmc2700/results/top_4_discrepancy_genes.png)
 
@@ -235,7 +235,8 @@ Seurat converts $U$ into a standardized $Z$-score: $Z = \frac{U - \mu_U}{\sigma_
 ### Data Preparation
 * **GetAssayData() & AggregateExpression()**
 Raw count data obtained from `GetAssayData(pbmcsca, assay = "RNA", layer = "counts")` are aggregated into pseudobulk profiles using `AggregateExpression(pbmcsca, group.by = c("CellType", "orig.ident"))`. The resulting sparse matrix `dgCMatrix` is generated in Seurat by summing raw transcript counts for each gene across all cells belonging to a given cell-type and sample pair: 
-$$\text{Pseudobulk Count}_{\text{GENE, B cell\_pbmc1}} = \sum_{c \in \text{B cells from pbmc1}} \text{Count}_{\text{GENE, cell } c}$$ 
+ 
+$$\text{Pseudobulk Count}_{\text{GENE, B cell\_pbmc1}} = \sum_{c \in \text{B cells from pbmc1}} \text{Count}_{\text{GENE, cell } c}$$
 
 * **Meta-data: df_info**: A metadata data frame (`df_info`) is created from the pseudobulk count matrix so that `DESeq2` can map each aggregated profile to its corresponding biological condition, cell type, and donor (`orig.ident`).
 
@@ -282,7 +283,7 @@ The following 4 point pseudobulk PCA provides visual verification of the varianc
 * 1. Size Factor Estimation (Normalization)
 Size factors are estimated using the median-of-ratios method to correct for differences in sequencing depth and prevent compositional bias. The size factors calculated via sizeFactors(DE_seq_object) span a 2.15-fold range across samples:
 
-in $\left( \text{Fold Range} = \frac{\text{Maximum Size Factor}}{\text{Minimum Size Factor}} = \frac{1.640}{0.763} \approx 2.15 \right)$
+$\left( \text{Fold Range} = \frac{\text{Maximum Size Factor}}{\text{Minimum Size Factor}} = \frac{1.640}{0.763} \approx 2.15 \right)$
 
 This fold range indicates that the sample with the highest coverage (`Cytotoxic T cell_pbmc1`) yielded approximately 2.15 times more usable sequencing depth than the sample with the lowest coverage (`CD4+ T cell_pbmc2`).
 
@@ -293,6 +294,7 @@ Mean-Variance Modeling is used to accurately estimate dispersion because pseudob
 Negative Binomial Generalized Linear Model is fitted using design formula, calculates Wald test statistics, and derive p-values. `DESeq2` models expected normalized count $\mu_{ij}$ for gene $i$ in sample $j$ using a log link function with an offset for the sample size factor ($s_j$):
 
 $$\log_2(\mu_{ij}) = \beta_0 + \beta_{\text{donor}} \cdot \text{Donor}_j + \beta_{\text{celltype}} \cdot \text{CellType}_j + \log_2(s_j)$$
+
 Model Parameters: $\beta_0$ represents the baseline intercept, while `orig.ident` ($\text{Donor}_j$) and `CellType` ($\text{CellType}_j$) enter the model as dummy-coded covariates.
 
 Effect Size & Testing: The coefficient $\beta_{\text{celltype}}$ directly quantifies the $\log_2$ fold change between cell types while controlling for donor batch variation ($\beta_{\text{donor}}$). The Wald test evaluates the null hypothesis $H_0: \beta_{\text{celltype}} = 0$ by computing $Z = \frac{\beta_{\text{celltype}}}{\text{SE}(\beta_{\text{celltype}})}$, yielding raw $p$-values that are subsequently adjusted for multiple testing using the Benjamini-Hochberg procedure.
