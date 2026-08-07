@@ -28,12 +28,14 @@ Compared three distinct clustering methods to evaluate cell lineages:
 
 **K-Means Clustering:** Restricts data points into rigid, spherical clusters around an optimized k=5 centroids by iteratively minimizing the within-cluster sum of squares (WCSS). While computationally simple, it fails to capture non-spherical biological distributions.
 
-* K-Means Top 2 Marker Genes per Classified CellType ranked by `avg_log2FC`.
+* K-Means Top 2 Marker Genes per Classified CellType ranked by `avg_log2FC`
+ 
 ![top_KMeans_markers](pbmc2700/results/top_KMeans_markers.png)
 
 **Hierarchical Clustering:** Builds an easy to interpret dendrogram & clustering plot based on pairwise distance matrices (ward.D2: Ward's Minimum Variance Method - True Criterion). While it provides an intuitive visual representation of biological relationships, it scaled poorly with large single-cell datasets (computational complexity: \(\mathcal{O}(N^2)\) and forces cells into strict, irreversible branch splits. Note: k=5 was used to compare against K-Means. 
 
-* Hierarchical Top 2 Marker Genes per Classified CellType ranked by `avg_log2FC`.
+* Hierarchical Top 2 Marker Genes per Classified CellType ranked by `avg_log2FC`
+  
 ![top_Hierarchical_markers](pbmc2700/results/top_Hierarchical_markers.png) 
 
 **Inter-Clustering Disagreement:** A simple Diagonal Alignment Score = 0.925 confirms strong agreement in grouping between K-Means and Hierarchical clustering is observed. However, a deeper investigation reveals slight mismatch in labeling. After aligning cluster labels via the Hungarian algorithm, Cohen's Unweighted Kappa reached $\kappa$ = 0.889. Meanwhile, Adjusted Rand Index is slightly lower with ARI = 0.819 probably due to how the two algorithms handle the trickier, closely related "T cells" and "NK cells". As seen in the marker genes table, Hierarchical Clustering isolated two canonical hallmark marker genes, `LEF1` and `MAL`, for Cluster 1 - "Naive T Cells" rather than grouping them with other "T cell" subsets. K-Means clustering grouped all "T Cells" (i.e., `TRAT1` and `AQP3`) into a broad Cluster 5 - "T Cells" without separating "Naive T cells". 
@@ -46,7 +48,7 @@ The following Cluster Alignment heatmap shows where the labeling discrepancy occ
 
 ![kmeans + hier](pbmc2700/results/kmeans_hier.png)
 
-**Louvain Clustering:** Builds a Nearest Neighbor network to cluster cells based on graph-based algorithms. This approach scales much more efficiently \(\mathcal{O}(N \cdot k)\) It captures complex non-linear topologies and isolates irregular cell populations without imposing geometric shape constraints. 
+**Louvain Clustering:** Builds a Nearest Neighbor network to cluster cells based on graph-based algorithms. This approach scales much more efficiently $(\mathcal{O}(N \cdot k))$ It captures complex non-linear topologies and isolates irregular cell populations without imposing geometric shape constraints. 
 
 
 ![tsne_umap](pbmc2700/results/tsne_umap.png)
