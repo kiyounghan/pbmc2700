@@ -209,7 +209,7 @@ Below is UP regulated genes with **NO FILTER** applied. Notice how the top gene 
 
 * **Quantifiable Evidence:** The `VlnPlot()` below provides quantitative evidence of the expression variance across the top four markers between cells where classifiers `Agree` versus those where predictions `Disagree`. For `GZMK`, `CCL5`, and `LYAR`, the inner white box plots demonstrate substantial upward shifts in both median expression and interquartile range (IQR) within in the `Disagree` group (spanning normalized expression levels of 2 to 4+), whereas the `Agree` group remains predominantly at zero or low baseline levels. Although, `LAG3` exhibits lower overall baseline expression, it maintains an enriched positive expression (tail density) in the `Disagree` subset. This confirms that the models are not failing due to random technical noise, but rather because these cells actively express a shared cytotoxic, effector, and exhaustion program.
 
-![vlnplot_agree_disagree](.pbmc2700/results/vlnplot_agree_disagree.png)
+![vlnplot_agree_disagree](./results/vlnplot_agree_disagree.png)
 
 
 * **Expression Heatmap:** The heatmap shows z-score scaled expression of top marker genes across annotated cell populations. Rows represent individual marker genes and columns represent annotated cell types organized by hierarchical clustering (indicated by the top dendrogram). Color intensity indicates relative gene expression (red = high expression, blue = low expression). Clean diagonal alignment confirms distinct cluster identities, while co-expressed gene bands between `Cytotoxic T cells` and `Natural Killer cells` highlight shared effector transcriptional machinery. 
