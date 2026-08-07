@@ -234,7 +234,7 @@ Seurat converts $U$ into a standardized $Z$-score: $Z = \frac{U - \mu_U}{\sigma_
 
 ### Data Preparation
 * **GetAssayData() & AggregateExpression()**
-Raw count data obtained from `GetAssayData(pbmcsca, assay = "RNA", layer = "counts")` are aggregated into pseudobulk profiles using `AggregateExpression(pbmcsca, group.by = c("CellType", "orig.ident"))`. The resulting sparse matrix `dgCMatrix` is generated in Seurat by summing raw transcript counts for each gene across all cells belonging to a given cell type and sample pair (`**NOTE: B cell- pbmc1 was used because B cell_pbmc1 was not rendering properly**`)
+Raw count data obtained from `GetAssayData(pbmcsca, assay = "RNA", layer = "counts")` are aggregated into pseudobulk profiles using `AggregateExpression(pbmcsca, group.by = c("CellType", "orig.ident"))`. The resulting sparse matrix `dgCMatrix` is generated in Seurat by summing raw transcript counts for each gene across all cells belonging to a given cell type and sample pair (**`NOTE: B cell- pbmc1 was used because B cell_pbmc1 was not rendering properly`**)
  
 $$\text{Pseudobulk Count}_{\text{GENE, B cell-pbmc1}} = \sum_{c \in \text{B cells from pbmc1}} \text{Count}_{\text{GENE, cell } c}$$
 
