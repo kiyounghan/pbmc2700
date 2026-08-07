@@ -236,7 +236,7 @@ Seurat converts $U$ into a standardized $Z$-score: $Z = \frac{U - \mu_U}{\sigma_
 * **GetAssayData() & AggregateExpression()**
 Raw count data obtained from `GetAssayData(pbmcsca, assay = "RNA", layer = "counts")` are aggregated into pseudobulk profiles using `AggregateExpression(pbmcsca, group.by = c("CellType", "orig.ident"))`. The resulting sparse matrix `dgCMatrix` is generated in Seurat by summing raw transcript counts for each gene across all cells belonging to a given cell type and sample pair: 
  
-$$\mathrm{Pseudobulk\ Count}_{\mathrm{GENE,\ B\ cell\_pbmc1}} = \sum_{c \in \mathrm{B\ cells\ from\ pbmc1}} \mathrm{Count}_{\mathrm{GENE,\ cell\ } c}$$
+$$\text{Pseudobulk Count}_{\text{GENE, B cell\_pbmc1}} = \sum_{c \in \text{B cells from pbmc1}} \text{Count}_{\text{GENE, cell } c}$$
 
 * **Meta-data: `df_info`**: A metadata data frame (`df_info`) is created from the pseudobulk count matrix so that `DESeq2` can map each aggregated profile to its corresponding biological condition, cell type, and donor (`orig.ident`).
 
