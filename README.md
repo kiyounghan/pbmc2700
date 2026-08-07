@@ -161,7 +161,8 @@ Below is a table of the first 9 cells PREDICTED in Seurat's labels, RF labels an
 ![Seurat_RF_RF_Clean](./results/Seurat_RF_label.png)
 
 Plot of Seurat's labels vs. RF's cleaned labels. After the name/labeling correction is made, the plot's color scheme is corrected.
-![predicted.celltype + rf_model_Labels_clean](./results/predicted_celltype_rf_model_Labels_clean.png) 
+
+![predicted_celltype_rf_model_Labels_clean](./results/predicted_celltype_rf_model_Labels_clean.png) 
 
 
 Seurat and RF Concordance Heatmap. True Direct Concordance Rate is 92.87% where Concordance Rate is defined by the `mean(Seurat's predicted.celltype == rf_model_Labels_clean * 100)`. 
