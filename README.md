@@ -30,35 +30,35 @@ Compared three distinct clustering methods to evaluate cell lineages:
 
 * K-Means Top 2 Marker Genes per Classified CellType ranked by `avg_log2FC`
  
-![top_KMeans_markers](pbmc2700/results/top_KMeans_markers.png)
+![top_KMeans_markers](./results/top_KMeans_markers.png)
 
 **Hierarchical Clustering:** Builds an easy to interpret dendrogram & clustering plot based on pairwise distance matrices (ward.D2: Ward's Minimum Variance Method - True Criterion). While it provides an intuitive visual representation of biological relationships, it scaled poorly with large single-cell datasets (computational complexity: $(\mathcal{O}(N^2))$ and forces cells into strict, irreversible branch splits. Note: k=5 was used to compare against K-Means. 
 
 * Hierarchical Top 2 Marker Genes per Classified CellType ranked by `avg_log2FC`
   
-![top_Hierarchical_markers](pbmc2700/results/top_Hierarchical_markers.png) 
+![top_Hierarchical_markers](./results/top_Hierarchical_markers.png) 
 
 **Inter-Clustering Disagreement:** A simple Diagonal Alignment Score = 0.925 confirms strong agreement in grouping between K-Means and Hierarchical clustering is observed. However, a deeper investigation reveals slight mismatch in labeling. After aligning cluster labels via the Hungarian algorithm, Cohen's Unweighted Kappa reached $\kappa$ = 0.889. Meanwhile, Adjusted Rand Index is slightly lower with ARI = 0.819 probably due to how the two algorithms handle the trickier, closely related "T cells" and "NK cells". As seen in the marker genes table, Hierarchical Clustering isolated two canonical hallmark marker genes, `LEF1` and `MAL`, for Cluster 1 - "Naive T Cells" rather than grouping them with other "T cell" subsets. K-Means clustering grouped all "T Cells" (i.e., `TRAT1` and `AQP3`) into a broad Cluster 5 - "T Cells" without separating "Naive T cells". 
 
 The following Cluster Alignment heatmap shows where the labeling discrepancy occurred.
 
-![Cluster_Alignment](pbmc2700/results/Cluster_Alignment.png)
+![Cluster_Alignment](./results/Cluster_Alignment.png)
 
 **Inter-Clustering Agreement:** According to Landis & Koch benchmarks, a Kappa value $\kappa$ > 0.8 is considered almost perfect agreement. This almost perfect agreement can be seen from the side-by-side plot below. 
 
-![kmeans + hier](pbmc2700/results/kmeans_hier.png)
+![kmeans + hier](./results/kmeans_hier.png)
 
 **Louvain Clustering:** Builds a Nearest Neighbor network to cluster cells based on graph-based algorithms. This approach scales much more efficiently $(\mathcal{O}(N \cdot k))$ It captures complex non-linear topologies and isolates irregular cell populations without imposing geometric shape constraints. 
 
 
-![tsne_umap](pbmc2700/results/tsne_umap.png)
+![tsne_umap](./results/tsne_umap.png)
 
 
 ### 2. Verification by Canonical Markers
 
 Validate the unsupervised clustering methods and results by generating expression maps for canonical lineage markers. Notably, **`MS4A1`** cleanly marks the **B Cells** cluster, **`CD8A`** marks the **T Cells** cluster since **CD8+ T Cells** is a subpopulation of **T Cells**, **`CD14`** marks Monocytes and Macrophages so it is labeled as **CD14+ Monocytes**, and **`GNLY`** marks **NK Cells** Cluster, confirming the biological accuracy of the groupings.
 
-![canonical_plot](pbmc2700/results/canonical_plot.png)
+![canonical_plot](./results/canonical_plot.png)
 
 
 
@@ -67,14 +67,14 @@ Validate the unsupervised clustering methods and results by generating expressio
 ### 1. Anchor Score Distribution
 The PBMCSCA and PBMC_2700 datasets were filtered, then `NormalizeData()`, `FindVariableFeatures()`, `ScaleData()`, and `RunPCA()` were applied. Seurat's supervised label transfer method `FindTransferAnchors()` was applied between the reference and query datasets to find anchors (Mutual Nearest Neighbor cell pairs) to project the reference labels "CellType" directly onto PBMC_2700 cells for classification. There are 4,070 anchors (values between 0 and 1). The summary statistics show median (0.593) and mean (0.596). They are nearly identical. The 3rd Quantile and above are strong alignments with values of 0.778 and above, meaning the distribution is right tail heavy. To be more specific, there is a peak/mode at 1.0 with 459 counts or 11.2% of the total anchors. On the other hand, approximately 3.1% of anchors are valued less than 0.1. These low-valued anchors, between 0 and 0.1, represent ambiguous or noisy cell pairs (e.g., rare or transitional cell states) and soft-weighting is used so that low-scoring anchors contribute very little to final cell-type predictions. Collectively, the distribution of the anchors allow for the expectation of ideal alignment between reference and query because there is high overlap of cell types and low technical noise. The following histogram + summary statistics depicts the distribution of the anchors. 
  
-![anchor_histogram](pbmc2700/results/anchor_histogram.png)
+![anchor_histogram](./results/anchor_histogram.png)
 
 
 
 ### 2. Prediction Score Max
 Query label predictions were made using Seurat's `TransferData()`. The prediction score max summary statistics states the 1st Quantile is 0.9723 so this signifies that 75% of cells have a confidence score of 97.23% or higher. In addition, Median = 1.0 and 3rd Quartile = 1.0 so this means at least half of all cells in the query dataset were assigned to a reference cell type with 100% confidence. Across the entire dataset, the average assignment confidence is over 95% because the Mean = 0.9521. Lastly, even the hardest to classify cell in the entire dataset still had a decent ~ 45% maximum probability (Min = 0.4490). Given the prediction score max summary statistics, classification of query cells can be readily accepted. Rather than plotting the distribution or histogram of prediction score max, the following plot visualizes the locations of Prediction Score Max and the summary statistics.   
 
-![pred_score_max_summary_statistics](pbmc2700/results/pred_score_max_summary_statistics.png) 
+![pred_score_max_summary_statistics](./results/pred_score_max_summary_statistics.png) 
 
 
 
@@ -85,13 +85,13 @@ Cytotoxic T cells simultaneously share a core T-cell lineage with CD4+ T cells, 
 
 Inspecting the prediction score distribution confirms this cross-lineage probability splitting. At high confidence (score $> 0.90$), all 102 cells are cleanly classified as Cytotoxic T cells, whereas 2,263 cells with scores $< 0.10$ are labeled as non-cytotoxic. However, within the intermediate transition zone ($0.10 < \text{score} < 0.90$, $n = 273$), cell assignments split across 129 CD4+ T cells (or their naive, memory, and activated subsets), 121 Cytotoxic T cells, 22 NK cells, and 1 B cell. Notably, CD4+ T-cell subsets form a continuous functional spectrum rather than distinct clusters. This labeling ambiguity between Cytotoxic T cells and NK cells likely stems from their shared cytotoxic effector machinery, as both lineages express identical marker genes such as NKG7, GZMB (Granzyme B), PRF1 (Perforin), and GNLY (Granulysin).
 
-![mid_cells_by_Cyto](pbmc2700/results/mid_cells_by_Cyto.png)
+![mid_cells_by_Cyto](./results/mid_cells_by_Cyto.png)
 
 
 ### 4. Predicted CellType by Seurat & Cytotoxic T cells Prediction Score Max Location 
 The cells are predicted to be one of nine types. They are labeled and plotted. 
 
-![seurat_predicted_labels](pbmc2700/results/seurat_predicted_labels.png)
+![seurat_predicted_labels](./results/seurat_predicted_labels.png)
 
 
 
@@ -110,7 +110,7 @@ The cells are predicted to be one of nine types. They are labeled and plotted.
 
 The plot illustrates fundamental differences between droplet-based single-cell technologies (e.g., 10x Chromium, Drop-seq, and inDrops) and plate-based, full-length technologies (e.g., Smart-seq2). Droplet methods sequence only the 3' or 5' end of RNA molecules, typically yielding 10k–50k UMI counts per cell. In contrast, full-length methods sequence entire transcripts at much higher coverage per cell, thereby generating 300k–600k+ counts per cell.
 
-![VlnPlot_3_Method](pbmc2700/results/VlnPlot_3_Method.png)
+![VlnPlot_3_Method](./results/VlnPlot_3_Method.png)
 
 **Multiple Donors:** Multiple Donors: As noted previously, metadata can be grouped by using `group.by = "orig.ident"`. The dataset comprises two biological donors: `pbmc1` and `pbmc2`. Integrating multiple donors introduces key analytical considerations:
 * **Impact on Random Forest Performance:** Incorporating multiple donors allows the Random Forest (RF) model to learn robust cell-type signatures that generalize across individuals by prioritizing universal lineage markers (e.g., CD3D for T cells, MS4A1 for B cells) over donor-specific idiosyncrasies.
@@ -121,7 +121,7 @@ To pinpoint which specific lineages drove this imbalance, a pairwise Fisher's Ex
 
 The figure below displays a side-by-side bar plot comparing cell-type distributions across donors alongside the corresponding Fisher's Exact Test results:
 
-![Donor_CellType_Distribution](pbmc2700/results/Donor_CellType_Distribution.png)
+![Donor_CellType_Distribution](./results/Donor_CellType_Distribution.png)
 
 
 **Variable genes and Intersection genes:** The top five variable features in the reference dataset are `TAOK1`, `RP11-167N5.5`, `PPBP`, `IGLC2`, and `IGLC3`, whereas the top variable features in the query dataset are `PPBP`, `LYZ`, `S100A9`, `IGLL5`, and `GNLY`.
@@ -143,7 +143,7 @@ The reference dataset exhibits extreme class imbalance, containing 6,872 Cytotox
 * **Optimal Parameter:** An optimal `mtry = 24` was selected, achieving a peak Cohen's Kappa score of $\kappa = 0.8472$.
 * **Grid Search:** The tuning range (`candidate_mtry <- seq(15, 30, by = 1)`) was refined following multiple coarse parameter sweeps
 
-![rf_final_plot](pbmc2700/results/rf_final_plot.png)
+![rf_final_plot](./results/rf_final_plot.png)
 
 
 ### 3. Query Projection, Prediction, and Analysis of Fit
@@ -154,19 +154,19 @@ Prior to evaluating classification concordance, string formatting mismatches bet
 
 Due to these labeling discrepancies, unaligned string names cause `DimPlot()` to map equivalent biological identities to separate color keys, artificially obscuring visual concordance across embeddings.
 
-![p1_p2](pbmc2700/results/p1_p2.png)
+![p1_p2](./results/p1_p2.png)
 
 Below is a table of the first 9 cells PREDICTED in Seurat's labels, RF labels and RF's cleaned labels. Notice double periods (..) converts to plus signs (+) and single periods (.) changes to spaces ( ) in column 2 and 3, respectively to reconcile string formatting differences and align with Seurat's original metadata conventions.
 
-![Seurat_RF_RF_Clean](pbmc2700/results/Seurat_RF_label.png)
+![Seurat_RF_RF_Clean](./results/Seurat_RF_label.png)
 
 Plot of Seurat's labels vs. RF's cleaned labels. After the name/labeling correction is made, the plot's color scheme is corrected.
-![predicted.celltype + rf_model_Labels_clean](pbmc2700/results/predicted_celltype_rf_model_Labels_clean.png) 
+![predicted.celltype + rf_model_Labels_clean](./results/predicted_celltype_rf_model_Labels_clean.png) 
 
 
 Seurat and RF Concordance Heatmap. True Direct Concordance Rate is 92.87% where Concordance Rate is defined by the `mean(Seurat's predicted.celltype == rf_model_Labels_clean * 100)`. 
 
-![Seurat_RF_Concordance](pbmc2700/results/Seurat_RF_Concordance.png)
+![Seurat_RF_Concordance](./results/Seurat_RF_Concordance.png)
 
 
 
@@ -179,7 +179,7 @@ Important filter criterias are `p_val_adj` and `avg_log2FC`.
 
 Below is table of **top 5 UP regulated genes** in discrepancy cells where filters : Avg Log2 FC > 0 and filter(p_val_adj < 0.05) 
 
-![top5_UP_filter](pbmc2700/results/top5_UP_filter.png)
+![top5_UP_filter](./results/top5_UP_filter.png)
 
 NK cells and cytotoxic/exhausted CD8+ T cells share a substantial portion of their underlying transcriptional program. The primary discrepancy markers identified here— `LAG3`, `GZMK`, `CCL5`, `LYAR`, and `HOPX` —represent key components of this shared effector and exhaustion pathway. This biological overlap explains why automated single-cell classifiers frequently struggle to cleanly resolve these two lineages without targeted sub-clustering or gene-selection filters.
 
@@ -194,26 +194,26 @@ $$\text{pct.1} = \frac{\text{Number of Disagree cells with Gene Expression } > 0
 
 Below is UP regulated genes with **NO FILTER** applied. Notice how the top gene produces Avg Log2FC = 2.913 but the Adj p-value = 1. Presentation of the following table may seem superfluous and unnecessary but application of filter(p_val_adj < 0.05) is an absolute primary necessity and the potential detrimental impact misleading statistics can have on inferences derived from filter's absence must be highlighted, from the perspective of this statistician.   
 
-![top5_UP_no_filter](pbmc2700/results/top5_UP_no_filter.png)
+![top5_UP_no_filter](./results/top5_UP_no_filter.png)
 
 * Top Fold-Change DOWN regulated Genes with filter and no filter combined
 
-![Top Fold_Change DOWN regulated Genes](pbmc2700/results/Top_Fold_Change_DOWN_regulated_Genes.png)
+![Top Fold_Change DOWN regulated Genes](./results/Top_Fold_Change_DOWN_regulated_Genes.png)
 
 ### Discrepancy Visualization
 * **Spatial Evidence**: The `FeaturePlot()` provided below provides spatial proof on the UMAP that these discrepancy markers are not randomly scattered, but are tightly co-localized to a single, distinct sub-cluster. High expression levels across all four markers concentrate heavily in the lower-middle region of the primary top-right UMAP cluster (chicken drumstick) $(\text{umap}_1 \in [3, 8], \text{umap}_2 \in [-2, 5])$ This spatial alignment confirms that the shared expression of cytotoxic and exhaustion genes — and the resulting classification disagreement between algorithms — is isolated to a discrete biological subpopulation.
 
-![top_4_discrepancy_genes](pbmc2700/results/top_4_discrepancy_genes.png)
+![top_4_discrepancy_genes](./results/top_4_discrepancy_genes.png)
 
 
 * **Quantifiable Evidence:** The `VlnPlot()` below provides quantitative evidence of the expression variance across the top four markers between cells where classifiers `Agree` versus those where predictions `Disagree`. For `GZMK`, `CCL5`, and `LYAR`, the inner white box plots demonstrate substantial upward shifts in both median expression and interquartile range (IQR) within in the `Disagree` group (spanning normalized expression levels of 2 to 4+), whereas the `Agree` group remains predominantly at zero or low baseline levels. Although, `LAG3` exhibits lower overall baseline expression, it maintains an enriched positive expression (tail density) in the `Disagree` subset. This confirms that the models are not failing due to random technical noise, but rather because these cells actively express a shared cytotoxic, effector, and exhaustion program.
 
-![vlnplot_agree_disagree](pbmc2700/results/vlnplot_agree_disagree.png)
+![vlnplot_agree_disagree](.pbmc2700/results/vlnplot_agree_disagree.png)
 
 
 * **Expression Heatmap:** The heatmap shows z-score scaled expression of top marker genes across annotated cell populations. Rows represent individual marker genes and columns represent annotated cell types organized by hierarchical clustering (indicated by the top dendrogram). Color intensity indicates relative gene expression (red = high expression, blue = low expression). Clean diagonal alignment confirms distinct cluster identities, while co-expressed gene bands between `Cytotoxic T cells` and `Natural Killer cells` highlight shared effector transcriptional machinery. 
 
-![Expression_Heatmap](pbmc2700/results/Expression_Heatmap.png)
+![Expression_Heatmap](./results/Expression_Heatmap.png)
 
 
 
@@ -261,7 +261,7 @@ Raw transcript count data are heteroscedastic —where expression variance scale
 
 Setting `blind = FALSE` ensures that the transformation accounts for the specified experimental design (`design = ~ orig.ident + CellType`). This prevents expected biological variance between cell types and donor batches from being treated as unexplained noise during dispersion trend fitting.     
 
-![var_stab_transf](pbmc2700/results/var_stab_transf.png)
+![var_stab_transf](./results/var_stab_transf.png)
 
 `FGR` expression is roughly at minimum of $2^{(13.066656 - 10.205740)} \approx$ 7.264764-fold higher and at maximum of $2^{(13.587725 - 8.32980)} \approx$ 38.26416-fold higher in `Cytotoxic T cells` compared to `CD4+ T cells`. 
 
@@ -273,7 +273,7 @@ The following 4 point pseudobulk PCA provides visual verification of the varianc
 
 * **PC 2 (41% of variance):** Both `pbmc1` samples (red and green) are located at the top ($\approx 10$ to $\approx 24$) and both `pbmc2` samples (cyan and purple) are located at the bottom ($\approx -10$ to $\approx -24$). This orthogonal separation confirms that the secondary axis of variation captures donor-specific batch effects.
 
-![PCA_var_stab_transf](pbmc2700/results/PCA_var_stab_transf.png)
+![PCA_var_stab_transf](./results/PCA_var_stab_transf.png)
 
 
 
@@ -327,7 +327,7 @@ To obtain accurate, unbiased effect size estimates for ranking genes and downstr
 * `padj`: False Discovery Rate (FDR) adjusted $p$-value computed via the Benjamini-Hochberg (BH) procedure.
 
 The `apeglm_df` table is sorted in ascending order by adjusted $p$-value (padj) to prioritize top statistically significant features.
-![apeglm_df](pbmc2700/results/apeglm_df.png)
+![apeglm_df](./results/apeglm_df.png)
 
 
 ### Heatmap of Top 20 Differentially Expressed Genes (DEGs)
@@ -340,7 +340,7 @@ Hierarchical clustering of the top 20 DEGs demonstrates clear transcriptomic sep
 
 * **CD4+ T-Cell Module:** The upper-right cluster displays strong relative upregulation in `CD4+ T cells`, highlighted by lineage-associated transcription factors and cell-surface markers: `LEF1`, `MAL`, and `ANKRD55`.
 
-![top20_genes](pbmc2700/results/top20_genes.png)
+![top20_genes](./results/top20_genes.png)
 
 
 ```text
