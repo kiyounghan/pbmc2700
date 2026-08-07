@@ -7,30 +7,27 @@ echo "=================================================="
 echo "   STARTING SINGLE-CELL DATA ACQUISITION PIPELINE "
 echo "=================================================="
 
-# --- SECTION 1: QUERY DATASET (2,700 PBMCs from 10x Genomics) ---
-echo -e "\n--> Step 1: Verifying Local Query Dataset..."
+# --- SECTION 1: QUERY DATASET (pbmc3k via SeuratData) ---
+echo -e "\n--> Step 1: Verifying SeuratData Query Environment..."
 
-DATA_URL="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz"
-TARGET_TAR="matrix_2700.tar.gz"
-EXTRACT_DIR="filtered_gene_bc_matrices"
+# This block spins up an isolated R instance to safely check the SeuratData cache
+R_COMMAND="
+if (!requireNamespace('SeuratData', quietly = TRUE)) {
+    message('SeuratData package missing. Installing now...')
+    install.packages('SeuratData', repos = 'https://cloud.r-project.org')
+}
 
-# Check if the compressed tarball already exists
-if [ -f "$TARGET_TAR" ]; then
-    echo "SKIP Tarball '$TARGET_TAR' already exists locally."
-else
-    echo "Tarball not found. Downloading 2,700 PBMC dataset..."
-    curl -o "$TARGET_TAR" "$DATA_URL"
-    echo "Download complete."
-fi
+# Load available dataset inventory
+installed_data <- SeuratData::AvailableData()
 
-# Check if the extracted data directory already exists
-if [ -d "$EXTRACT_DIR" ]; then
-    echo "SKIP Extracted directory '$EXTRACT_DIR/' already exists."
-else
-    echo "Extracted data directory not found. Unpacking archive..."
-    tar -xzf "$TARGET_TAR"
-    echo "Extraction complete."
-fi
+if (!'pbmc3k' %in% installed_data\$Dataset) {
+    message('Queru dataset \"pbmc3k\" not found in cache. Downloading via SeuratData...')
+    SeuratData::InstallData('pbmc3k')
+    message('Query dataset \"pbmc3k\" successfully downloaded and cached.')
+} else {
+    message('SKIP Reference dataset \"pbmc3k\" is already cached locally.')
+}
+"
 
 
 # --- SECTION 2: REFERENCE DATASET (pbmcsca via SeuratData) ---
