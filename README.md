@@ -18,7 +18,7 @@ Data is first filtered using `subset()` then, `NormalizeData()` is applied to co
 Finally, `RunPCA()` reads the $X$ and computes Singular Value Decomposition (SVD) $X = U \Sigma V^T$:
 * Gene Loadings ($U$) are the "weights" or contribution each gene makes to each Principal Component.
 * Singular Values ($\Sigma$) are the values proportional to the variance explained by each Principal Component.
-* Cell Embeddings ($V \Sigma$) are the low-dimensional coordinates of each cell in the new low-dimensional PCA space ($\text{PC}_1, \dots, \text{PC}_{50}$).   
+* Cell Embeddings ($V \Sigma$) are the low-dimensional coordinates of each cell in the new low-dimensional PCA space ($PC_1, \dots, \PC_50$).   
 
 
 
