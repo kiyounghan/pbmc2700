@@ -120,6 +120,7 @@ The plot illustrates fundamental differences between droplet-based single-cell t
 To pinpoint which specific lineages drove this imbalance, a pairwise Fisher's Exact Test was performed for each cell type. All cell types exhibited statistically significant donor-level representation differences except for **Plasmacytoid dendritic** cells. To account for this population imbalance and prevent donor-specific overfitting, a stratified 2-fold Leave-One-Group-Out (`orig.ident`) Cross-Validation RF framework was implemented.
 
 The figure below displays a side-by-side bar plot comparing cell-type distributions across donors alongside the corresponding Fisher's Exact Test results:
+
 ![Donor_CellType_Distribution](pbmc2700/results/Donor_CellType_Distribution.png)
 
 
@@ -176,9 +177,9 @@ Define a function that yields a Agree/ Disagree values based on  Seurat's `predi
 
 Important filter criterias are `p_val_adj` and `avg_log2FC`.
 
-Below is table of **top 5 UP regulated genes** in discrepancy cells where filters : Avg Log2 FC > 0 and filter(p_val_adj < 0.05). 
+Below is table of **top 5 UP regulated genes** in discrepancy cells where filters : Avg Log2 FC > 0 and filter(p_val_adj < 0.05) 
 
-![top5_UP_filter](pbmc2700/results/top5_UP_filter.png) 
+![top5_UP_filter](pbmc2700/results/top5_UP_filter.png)
 
 NK cells and cytotoxic/exhausted CD8+ T cells share a substantial portion of their underlying transcriptional program. The primary discrepancy markers identified here— `LAG3`, `GZMK`, `CCL5`, `LYAR`, and `HOPX` —represent key components of this shared effector and exhaustion pathway. This biological overlap explains why automated single-cell classifiers frequently struggle to cleanly resolve these two lineages without targeted sub-clustering or gene-selection filters.
 
@@ -197,7 +198,7 @@ Below is UP regulated genes with **NO FILTER** applied. Notice how the top gene 
 
 * Top Fold-Change DOWN regulated Genes with filter and no filter combined
 
-![Top Fold-Change DOWN regulated Genes](pbmc2700/results/Top_Fold_Change_DOWN_regulated_Genes.png)
+![Top Fold_Change DOWN regulated Genes](pbmc2700/results/Top_Fold_Change_DOWN_regulated_Genes.png)
 
 ### Discrepancy Visualization
 * **Spatial Evidence**: The `FeaturePlot()` provided below provides spatial proof on the UMAP that these discrepancy markers are not randomly scattered, but are tightly co-localized to a single, distinct sub-cluster. High expression levels across all four markers concentrate heavily in the lower-middle region of the primary top-right UMAP cluster (chicken drumstick) ($(\text{umap\_1} \in [3, 8], \text{umap\_2} \in [-2, 5])$. This spatial alignment confirms that the shared expression of cytotoxic and exhaustion genes — and the resulting classification disagreement between algorithms — is isolated to a discrete biological subpopulation.
