@@ -18,7 +18,7 @@ Data is first filtered using `subset()` then, `NormalizeData()` is applied to co
 Finally, `RunPCA()` reads the $X$ and computes Singular Value Decomposition (SVD) $X = U \Sigma V^T$:
 * Gene Loadings ($U$) are the "weights" or contribution each gene makes to each Principal Component.
 * Singular Values ($\Sigma$) are the values proportional to the variance explained by each Principal Component.
-* Cell Embeddings ($V \Sigma$) are the low-dimensional coordinates of each cell in the new low-dimensional PCA space ($PC_1, \dots, \PC_50$).   
+* Cell Embeddings ($V \Sigma$) are the low-dimensional coordinates of each cell in the new low-dimensional PCA space (PC_1, ... , PC_50).   
 
 
 
@@ -31,7 +31,7 @@ Compared three distinct clustering methods to evaluate cell lineages:
 * K-Means Top 2 Marker Genes per Classified CellType ranked by `avg_log2FC`.
 ![top_KMeans_markers](pbmc2700/results/top_KMeans_markers.png)
 
-**Hierarchical Clustering:** Builds an easy to interpret dendrogram & clustering plot based on pairwise distance matrices (ward.D2: Ward's Minimum Variance Method - True Criterion). While it provides an intuitive visual representation of biological relationships, it scaled poorly with large single-cell datasets (computational complexity:$\mathcal{O}(N^2)$) and forces cells into strict, irreversible branch splits. Note: k=5 was used to compare against K-Means. 
+**Hierarchical Clustering:** Builds an easy to interpret dendrogram & clustering plot based on pairwise distance matrices (ward.D2: Ward's Minimum Variance Method - True Criterion). While it provides an intuitive visual representation of biological relationships, it scaled poorly with large single-cell datasets (computational complexity: \(\mathcal{O}(N^2)\) and forces cells into strict, irreversible branch splits. Note: k=5 was used to compare against K-Means. 
 
 * Hierarchical Top 2 Marker Genes per Classified CellType ranked by `avg_log2FC`.
 ![top_Hierarchical_markers](pbmc2700/results/top_Hierarchical_markers.png) 
@@ -46,7 +46,7 @@ The following Cluster Alignment heatmap shows where the labeling discrepancy occ
 
 ![kmeans + hier](pbmc2700/results/kmeans_hier.png)
 
-**Louvain Clustering:** Builds a Nearest Neighbor network to cluster cells based on graph-based algorithms. This approach scales much more efficiently ($\mathcal{O}(N \cdot k)$). It captures complex non-linear topologies and isolates irregular cell populations without imposing geometric shape constraints. 
+**Louvain Clustering:** Builds a Nearest Neighbor network to cluster cells based on graph-based algorithms. This approach scales much more efficiently \(\mathcal{O}(N \cdot k)\) It captures complex non-linear topologies and isolates irregular cell populations without imposing geometric shape constraints. 
 
 
 ![tsne_umap](pbmc2700/results/tsne_umap.png)
@@ -157,7 +157,7 @@ Below is a table of the first 9 cells PREDICTED in Seurat's labels, RF labels an
 ![Seurat_RF_RF_Clean](pbmc2700/results/Seurat_RF_label.png)
 
 Plot of Seurat's labels vs. RF's cleaned labels. After the name/labeling correction is made, the plot's color scheme is corrected.
-![predicted.celltype + rf_model_Labels_clean](pbmc2700/results/predicted.celltype + rf_model_Labels_clean.png) 
+![predicted.celltype + rf_model_Labels_clean](pbmc2700/results/predicted_celltype_rf_model_Labels_clean.png) 
 
 
 Seurat and RF Concordance Heatmap. True Direct Concordance Rate is 92.87% where Concordance Rate is defined by the `mean(Seurat's predicted.celltype == rf_model_Labels_clean * 100)`. 
@@ -183,7 +183,7 @@ NK cells and cytotoxic/exhausted CD8+ T cells share a substantial portion of the
 Using the top marker `LAG3` as an exemplar:
 * `avg_log2FC`: Log fold change in gene expression, indicating that average expression in the Disagree group is approximately 6.68-fold higher than in the Agree group ($2^{2.74} \approx 6.68$).
 * `pct.1` & `pct.2`: The proportion of detected cells (expression > 0) within the Disagree group (`pct.1`) and Agree group (`pct.2`), respectively:
-$\text{pct.1} = \frac{\text{Number of Disagree cells with Gene Expression } > 0}{\text{Total Number of Disagree cells}} = 0.154$
+$$\text{pct.1} = \frac{\text{Number of Disagree cells with Gene Expression } > 0}{\text{Total Number of Disagree cells}} = 0.154$$
 * `p_val`: Unadjusted p-value is calculated by a non-parametric two-sided Wilcoxon Rank-Sum Test. (At the current moment, trying to understand the statistics employed in `FindMarkers("test.use = "MAST")` Model-based Analysis of Single-cell Transcriptomics. This seems to be more accurate but I am NOT adept in MAST. )
 * `p_val_adj`: Adjusted p-value, found by Bonferroni correction, is used to compensate for false positives in multiple testing. It is calculated using p_val_adj = min(1, p_val x N). The formula explains why p_val_adj = 1, in the next table, and therefore, applying filter(p_val_adj < 0.05) is critical.
 
@@ -192,10 +192,10 @@ Below is UP regulated genes with **NO FILTER** applied. Notice how the top gene 
 ![top5_UP_no_filter](pbmc2700/results/top5_UP_no_filter.png)
 
 * Top Fold-Change DOWN regulated Genes with filter and no filter combined.
-![Top Fold-Change DOWN regulated Genes](pbmc2700/results/Top Fold-Change DOWN regulated Genes.png)
+![Top Fold-Change DOWN regulated Genes](pbmc2700/results/Top_Fold_Change_DOWN_regulated_Genes.png)
 
 ### Discrepancy Visualization
-* **Spatial Evidence**: The `FeaturePlot()` provided below provides spatial proof on the UMAP that these discrepancy markers are not randomly scattered, but are tightly co-localized to a single, distinct sub-cluster. High expression levels across all four markers concentrate heavily in the lower-middle region of the primary top-right UMAP cluster (chicken drumstick) ($\text{umap_1} \in [3, 8], \text{umap_2} \in [-2, 5]$). This spatial alignment confirms that the shared expression of cytotoxic and exhaustion genes — and the resulting classification disagreement between algorithms — is isolated to a discrete biological subpopulation.
+* **Spatial Evidence**: The `FeaturePlot()` provided below provides spatial proof on the UMAP that these discrepancy markers are not randomly scattered, but are tightly co-localized to a single, distinct sub-cluster. High expression levels across all four markers concentrate heavily in the lower-middle region of the primary top-right UMAP cluster (chicken drumstick) ($(\text{umap\_1} \in [3, 8], \text{umap\_2} \in [-2, 5])$. This spatial alignment confirms that the shared expression of cytotoxic and exhaustion genes — and the resulting classification disagreement between algorithms — is isolated to a discrete biological subpopulation.
 
 ![top_4_discrepancy_genes](pbmc2700/results/top_4_discrepancy_genes.png)
 
@@ -229,7 +229,7 @@ Seurat converts $U$ into a standardized $Z$-score: $Z = \frac{U - \mu_U}{\sigma_
 ### Data Preparation
 * **GetAssayData() & AggregateExpression()**
 Raw count data obtained from `GetAssayData(pbmcsca, assay = "RNA", layer = "counts")` are aggregated into pseudobulk profiles using `AggregateExpression(pbmcsca, group.by = c("CellType", "orig.ident"))`. The resulting sparse matrix `dgCMatrix` is generated in Seurat by summing raw transcript counts for each gene across all cells belonging to a given cell-type and sample pair: 
-$\text{Pseudobulk Count}_{\text{GENE, B cell_pbmc1}} = \sum_{c \, \in \, \text{B cells from pbmc1}} \text{Count}_{\text{GENE, cell } c}$. 
+$$\text{Pseudobulk Count}_{\text{GENE, B cell\_pbmc1}} = \sum_{c \in \text{B cells from pbmc1}} \text{Count}_{\text{GENE, cell } c}$$ 
 
 * **Meta-data: df_info**: A metadata data frame (`df_info`) is created from the pseudobulk count matrix so that `DESeq2` can map each aggregated profile to its corresponding biological condition, cell type, and donor (`orig.ident`).
 
@@ -256,7 +256,7 @@ Setting `blind = FALSE` ensures that the transformation accounts for the specifi
 
 ![var_stab_transf](pbmc2700/results/var_stab_transf.png)
 
-`FGR` expression is roughly at minimum of $2^{(13.066656 - 10.205740)} \approx$ 7.264764-fold higher and at maximum of $2^{(13.587725 - 8.32980d)} \approx$ 38.26416-fold higher in `Cytotoxic T cells` compared to `CD4+ T cells`. 
+`FGR` expression is roughly at minimum of $2^{(13.066656 - 10.205740)} \approx$ 7.264764-fold higher and at maximum of $2^{(13.587725 - 8.32980)} \approx$ 38.26416-fold higher in `Cytotoxic T cells` compared to `CD4+ T cells`. 
 
 
 ### PCA Plot to visualize donor vs cell-type separation
@@ -276,7 +276,7 @@ The following 4 point pseudobulk PCA provides visual verification of the varianc
 * 1. Size Factor Estimation (Normalization)
 Size factors are estimated using the median-of-ratios method to correct for differences in sequencing depth and prevent compositional bias. The size factors calculated via sizeFactors(DE_seq_object) span a 2.15-fold range across samples:
 
-($\text{Fold Range} = \frac{\text{Maximum Size Factor}}{\text{Minimum Size Factor}} = \frac{1.640}{0.763} \approx 2.15$) 
+in $\left( \text{Fold Range} = \frac{\text{Maximum Size Factor}}{\text{Minimum Size Factor}} = \frac{1.640}{0.763} \approx 2.15 \right)$
 
 This fold range indicates that the sample with the highest coverage (`Cytotoxic T cell_pbmc1`) yielded approximately 2.15 times more usable sequencing depth than the sample with the lowest coverage (`CD4+ T cell_pbmc2`).
 
@@ -335,13 +335,15 @@ Hierarchical clustering of the top 20 DEGs demonstrates clear transcriptomic sep
 ![top20_genes](pbmc2700/results/top20_genes.png)
 
 
+```text
 ##################################################################################
 NOTE : Volcano map and GO Pathway Enrichment on top DEGs in progress ....
 ##################################################################################
-
+```
 
 
 ## Local Replication Guidelines
+
 ```bash
 git clone [https://github.com/kiyounghan/pbmc2700.git](https://github.com/kiyounghan/pbmc2700.git)
 cd pbmc2700
