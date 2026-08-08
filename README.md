@@ -282,7 +282,7 @@ The following 4 point pseudobulk PCA provides visual verification of the varianc
 
 **3 Core Statistical Calculations in `DESeq2`:** 
 * 1. Size Factor Estimation (Normalization)
-Size factors are estimated using the median-of-ratios method to correct for differences in sequencing depth and prevent compositional bias. The size factors calculated via sizeFactors(DE_seq_object) span a 2.15-fold range across samples:
+Size factors are estimated using the median-of-ratios method to correct for differences in sequencing depth and prevent compositional bias. The size factors calculated via `sizeFactors(DE_seq_object)` span a 2.15-fold range across samples:
 
 $\left( \text{Fold Range} = \frac{\text{Maximum Size Factor}}{\text{Minimum Size Factor}} = \frac{1.640}{0.763} \approx 2.15 \right)$
 
@@ -294,11 +294,11 @@ Mean-Variance Modeling is used to accurately estimate dispersion because pseudob
 * 3. GLM Fitting and Hypothesis Testing (Wald Test)
 Negative Binomial Generalized Linear Model is fitted using design formula, calculates Wald test statistics, and derive p-values. `DESeq2` models expected normalized count $\mu_{ij}$ for gene $i$ in sample $j$ using a log link function with an offset for the sample size factor ($s_j$):
 
-$$\log_2(\mu_{ij}) = \beta_0 + \beta_{\text{donor}} \cdot \text{Donor}_j + \beta_{\text{celltype}} \cdot \text{CellType}_j + \log_2(s_j)$$
+$$\log_2(\mu_{ij}) = \beta_0 + \beta_{\text{orig.ident}} \cdot \text{orig.ident}_j + \beta_{\text{CellType}} \cdot \text{CellType}_j + \log_2(s_j)$$
 
-Model Parameters: $\beta_0$ represents the baseline intercept, while `orig.ident` ($\text{Donor}_j$) and `CellType` ($\text{CellType}_j$) enter the model as dummy-coded covariates.
+Model Parameters: $\beta_0$ represents the baseline intercept, while `orig.ident` ($\text{orig.ident}_j$) and `CellType` ($\text{CellType}_j$) enter the model as dummy-coded covariates.
 
-Effect Size & Testing: The coefficient $\beta_{\text{celltype}}$ directly quantifies the $\log_2$ fold change between cell types while controlling for donor batch variation ($\beta_{\text{donor}}$). The Wald test evaluates the null hypothesis $H_0: \beta_{\text{celltype}} = 0$ by computing $Z = \frac{\beta_{\text{celltype}}}{\text{SE}(\beta_{\text{celltype}})}$, yielding raw $p$-values that are subsequently adjusted for multiple testing using the Benjamini-Hochberg procedure.
+Effect Size & Testing: The coefficient $\beta_{\text{CellType}}$ directly quantifies the $\log_2$ fold change between cell types while controlling for donor batch variation ($\beta_{\text{orig.ident}}$). The Wald test evaluates the null hypothesis $H_0: \beta_{\text{CellType}} = 0$ by computing $Z = \frac{\beta_{\text{CellType}}}{\text{SE}(\beta_{\text{CellType}})}$, yielding raw $p$-values that are subsequently adjusted for multiple testing using the Benjamini-Hochberg procedure.
 
 **Actuarial Parallel: Negative Binomial GLM in Claim Frequency vs. Pseudobulk Expression**
 
