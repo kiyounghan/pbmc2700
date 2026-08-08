@@ -332,7 +332,7 @@ To obtain accurate, unbiased effect size estimates for ranking genes and downstr
 The `apeglm_df` table is sorted in ascending order by adjusted p-value (`padj`) to prioritize top statistically significant features.
 ![apeglm_df](./results/apeglm_df.png)
 
-Result: In order to obtain accurate effect size estimates, log2 fold changes were shrunk using the `apeglm` algorithm nested inside of `DESeq2`. Top most differentially expressed genes demonstrated strong statistical significance `padj` < 10^(-24) across high baseline mean counts (`baseMean` > 1,000). Note worthy upregulated transcripts included LRRN3 ($\text{log}_2\text{FC}$ = 7.19) and MAL ($\text{log}_2\text{FC}$ = 6.66), while PRSS23 ($\text{log}_2\text{FC}$ = -6.92) and GZMH ($\text{log}_2\text{FC}$ = -6.59) led the downregulated markers. Low standard errors `lfcSE` < 0.67 across these candidates confirm that the observed fold changes reflect robust biological differences.
+The low standard errors (`lfcSE` < 0.67) show that donor heterogeneity was successfully controlled for within the GLM framework. This unmasked a profound transcriptional divergence between CD4+ T cells—which displayed significant enrichment for membrane and signaling regulators such as `LRRN3` ($\text{log}_2\text{FC}$ = 7.19) and `MAL` ($\text{log}_2\text{FC}$ = 6.66)—and Cytotoxic T cells, which were defined by heavy expression of the lytic effector gene `GZMH` ($\text{log}_2\text{FC}$ = -6.59) and the effector chemokine receptor `CX3CR1` ($\text{log}_2\text{FC}$ = -6.23). These extreme fold-change magnitudes (>60-fold differences) confirm that these cell types maintain mutually exclusive lineage programs that operate independently of donor background.
 
 ### Heatmap of Top 20 Differentially Expressed Genes (DEGs)
 
