@@ -83,12 +83,12 @@ There are 2,638 cells that have been labeled. A total of 248 cells (~9.40%) fall
 
 Cytotoxic T cells simultaneously share a core T-cell lineage with CD4+ T cells, with both expressing identical baseline T-cell markers including CD3D, CD3E, and CD3G. When `FindTransferAnchors()` projects query cells into reference PCA space, these shared T-cell signals can dominate other markers. As a result, cells sitting at the boundary between these clusters split their prediction probabilities across candidate reference labels— allocating weights among Cytotoxic T cells, CD4+ T cells, and NK cells. This probability dispersing directly lowers the maximum prediction score (prediction.score.max).  
 
-Inspecting the prediction score distribution confirms this cross-lineage probability splitting. At high confidence (score $> 0.90$), all 102 cells are cleanly classified as Cytotoxic T cells, whereas 2,263 cells with scores $< 0.10$ are labeled as non-cytotoxic. However, within the intermediate transition zone ($0.10 < \text{score} < 0.90$, $n = 273$), cell assignments split across 129 CD4+ T cells (or their naive, memory, and activated subsets), 121 Cytotoxic T cells, 22 NK cells, and 1 B cell. Notably, CD4+ T-cell subsets form a continuous functional spectrum rather than distinct clusters. This labeling ambiguity between Cytotoxic T cells and NK cells likely stems from their shared cytotoxic effector machinery, as both lineages express identical marker genes such as NKG7, GZMB (Granzyme B), PRF1 (Perforin), and GNLY (Granulysin).
+Inspecting the prediction score distribution confirms this cross-lineage probability splitting. At high confidence (score > 0.90), all 102 cells are cleanly classified as `Cytotoxic T cells`, whereas 2,263 cells with scores < 0.10 are labeled as non-cytotoxic. However, within the intermediate transition zone (0.10 < score < 0.90, n = 273), cell assignments split across 129 `CD4+ T cells` (or their naive, memory, and activated subsets), 121 `Cytotoxic T cells`, 22 `NK cells`, and 1 `B cell`. Notably, `CD4+ T-cell` subsets form a continuous functional spectrum rather than distinct clusters. This labeling ambiguity between `Cytotoxic T cells` and `NK cells` likely stems from their shared cytotoxic effector machinery, as both lineages express identical marker genes such as `NKG7`, `GZMB` (Granzyme B), `PRF1` (Perforin), and `GNLY` (Granulysin).
 
 ![mid_cells_by_Cyto](./results/mid_cells_by_Cyto.png)
 
 
-### 4. Predicted CellType by Seurat & Cytotoxic T cells Prediction Score Max Location 
+### 4. Predicted `CellType` by Seurat & `Cytotoxic T cells` Prediction Score Max Location 
 The cells are predicted to be one of nine types. They are labeled and plotted. 
 
 ![seurat_predicted_labels](./results/seurat_predicted_labels.png)
@@ -131,7 +131,7 @@ To train and evaluate the model on a unified feature space, it is critical to in
 
 ### 2. Modeling: 2-Fold Leave-One-Group-Out (`orig.ident`) Cross-Validation 
 
-The reference dataset exhibits extreme class imbalance, containing 6,872 Cytotoxic T cells compared to only 285 Dendritic cells and 142 Megakaryocytes. Without mitigation, a Random Forest classifier trained on these unweighted distributions will maximize overall accuracy by preferentially predicting majority classes. To ensure rare cell types exert equal influence when determining decision boundaries during tree splits, each cell type was capped at a maximum threshold of 300 cells via stratified subsampling.
+The reference dataset exhibits extreme class imbalance, containing 6,872 Cytotoxic T cells compared to only 285 Dendritic cell` and 142 Megakaryocytes. Without mitigation, a Random Forest classifier trained on these unweighted distributions will maximize overall accuracy by preferentially predicting majority classes. To ensure rare cell types exert equal influence when determining decision boundaries during tree splits, each cell type was capped at a maximum threshold of 300 cells via stratified subsampling.
 
 **Core Caret Workflow Functions:**
 * **`createDataPartition()`:** Performs stratified random sampling, allocating 80% of cells per CellType to the training set.
@@ -140,7 +140,7 @@ The reference dataset exhibits extreme class imbalance, containing 6,872 Cytotox
 * **`train()`:** Trains the classifier, evaluates performance across hyperparameter grids, selects the optimal mtry based on Cohen’s Kappa score, and retains the final tuned model.
 
 **Hyperparameter Optimization:**
-* **Optimal Parameter:** An optimal `mtry = 24` was selected, achieving a peak Cohen's Kappa score of $\kappa = 0.8472$.
+* **Optimal Parameter:** An optimal `mtry = 24` was selected, achieving a peak Cohen's Kappa score of $\kappa$ = 0.8472.
 * **Grid Search:** The tuning range (`candidate_mtry <- seq(15, 30, by = 1)`) was refined following multiple coarse parameter sweeps
 
 ![rf_final_plot](./results/rf_final_plot.png)
@@ -189,7 +189,9 @@ NK cells and cytotoxic/exhausted CD8+ T cells share a substantial portion of the
 Using the top marker `LAG3` as an exemplar:
 * `avg_log2FC`: Log fold change in gene expression, indicating that average expression in the Disagree group is approximately 6.68-fold higher than in the Agree group ($2^{2.74} \approx 6.68$).
 * `pct.1` & `pct.2`: The proportion of detected cells (expression > 0) within the Disagree group (`pct.1`) and Agree group (`pct.2`), respectively:
+  
 $$\text{pct.1} = \frac{\text{Number of Disagree cells with Gene Expression } > 0}{\text{Total Number of Disagree cells}} = 0.154$$
+
 * `p_val`: Unadjusted p-value is calculated by a non-parametric two-sided Wilcoxon Rank-Sum Test. (At the current moment, trying to understand the statistics employed in `FindMarkers("test.use = "MAST")` Model-based Analysis of Single-cell Transcriptomics. This seems to be more accurate but I am NOT adept in MAST. )
 * `p_val_adj`: Adjusted p-value, found by Bonferroni correction, is used to compensate for false positives in multiple testing. It is calculated using p_val_adj = min(1, p_val x N). The formula explains why p_val_adj = 1, in the next table, and therefore, applying filter(p_val_adj < 0.05) is critical.
 
@@ -320,16 +322,17 @@ In `DESeq2`, transcriptomic read counts are modeled using the exact same statist
 ### Effect Size Shrinkage with `lfcShrink(type = "apeglm")`
 To obtain accurate, unbiased effect size estimates for ranking genes and downstream visualization, empirical Bayes shrinkage is applied using `lfcShrink()` with `type = "apeglm"`. This method places a heavy-tailed Cauchy prior centered at zero on the $\log_2$ fold changes, shrinking noisy estimates from low-count or high-dispersion genes while preserving large, true biological effects.
 
-* `baseMean`: Average of normalized counts for a single gene calculated across all samples. 
-* `log2FoldChange`: The Bayesian posterior mode (peak) of $\log_2$ Fold Change under the Cauchy prior.
-* `lfcSE`: Posterior standard deviation of shrunken `log2FoldChange`.
+* $\text{Mean}(\mu_{ij} / s_j) \longrightarrow$ `baseMean`: Average of normalized counts for a single gene calculated across all samples.
+* $\log_2(s_j)$: The sample-specific normalization offset (size factor) that corrects for differences in sequencing depth across samples j.
+* $\beta_{\text{CellType}} \longrightarrow$ `log2FoldChange`: The Bayesian posterior mode (peak) of $\log_2$ Fold Change under the Cauchy prior.
+* $\text{SE}(\hat{\beta}_{\text{CellType}}) \longrightarrow$ `lfcSE`: Posterior standard deviation of shrunken `log2FoldChange`.
 * `stat`: The Wald test statistic calculated as $W = \frac{\log_2(\text{Fold Change})}{\text{lfcSE}}$
-* `pvalue`: Unadjusted two sided p-value calculated under $H_0: log_2\ (\text{Fold Change}) = 0$. 
-* `padj`: False Discovery Rate (FDR) adjusted $p$-value computed via the Benjamini-Hochberg (BH) procedure.
+* $H_0: \beta_{\text{celltype}} = 0 \longrightarrow$ `pvalue`: Unadjusted two sided p-value calculated under $H_0: log_2\ (\text{Fold Change}) = 0$. (`padj`: False Discovery Rate (FDR) adjusted $p$-value computed via the Benjamini-Hochberg (BH) procedure.)
 
-The `apeglm_df` table is sorted in ascending order by adjusted $p$-value (padj) to prioritize top statistically significant features.
+The `apeglm_df` table is sorted in ascending order by adjusted p-value (`padj`) to prioritize top statistically significant features.
 ![apeglm_df](./results/apeglm_df.png)
 
+Result: In order to obtain accurate effect size estimates, log2 fold changes were shrunk using the `apeglm` algorithm nested inside of `DESeq2`. Top most differentially expressed genes demonstrated strong statistical significance `padj` < 10^(-24) across high baseline mean counts (`baseMean` > 1,000). Note worthy upregulated transcripts included LRRN3 ($\text{log}_2\text{FC}$ = 7.19) and MAL ($\text{log}_2\text{FC}$ = 6.66), while PRSS23 ($\text{log}_2\text{FC}$ = -6.92) and GZMH ($\text{log}_2\text{FC}$ = -6.59) led the downregulated markers. Low standard errors `lfcSE` < 0.67 across these candidates confirm that the observed fold changes reflect robust biological differences.
 
 ### Heatmap of Top 20 Differentially Expressed Genes (DEGs)
 
